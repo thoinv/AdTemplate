@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root_ad_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:background="@android:color/white">
+
+    <FrameLayout
+        android:id="@+id/layout_content_ad"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/white"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="visible"
+        tools:ignore="UselessParent"
+        tools:visibility="visible">
+
+        <ImageView
+            android:id="@+id/iv_banner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:visibility="gone"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:background="#000"
+            android:includeFontPadding="false"
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/dp4"
+            android:paddingTop="@dimen/dp5"
+            android:paddingRight="@dimen/dp4"
+            android:text="@string/ad"
+            android:textColor="#fff"
+            android:textSize="@dimen/ad_sp10"
+            android:visibility="gone"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/native_ad_content_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:strokeColor="@color/ad_border"
+            app:strokeWidth="1.3dp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:id="@+id/layout_media_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:background="@drawable/bg_ad_loading"
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    app:layout_constraintDimensionRatio="16:9"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:visibility="visible" />
+
+                <FrameLayout
+                    android:id="@+id/native_adchoice_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="#000"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <LinearLayout
+                    android:id="@+id/native_ad_ad_icon_layout"
+                    android:layout_width="@dimen/dp40"
+                    android:layout_height="@dimen/dp40"
+                    android:layout_marginStart="@dimen/dp8"
+                    android:layout_marginTop="@dimen/dp10"
+                    android:background="@drawable/bg_ad_loading"
+                    android:orientation="vertical"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/layout_media_view"
+                    tools:src="@tools:sample/avatars" />
+
+                <TextView
+                    android:id="@+id/native_ad_ad_logo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:background="#000"
+                    android:includeFontPadding="false"
+                    android:paddingLeft="@dimen/dp4"
+                    android:paddingRight="@dimen/dp4"
+                    android:text="@string/ad"
+                    android:textColor="#fff"
+                    android:textSize="@dimen/ad_sp10"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/native_ad_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/dp8"
+                    android:layout_marginRight="@dimen/dp8"
+                    android:background="@drawable/bg_ad_loading"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:text="                                                                  "
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/ad_sp16"
+                    app:layout_constrainedWidth="true"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintLeft_toRightOf="@+id/native_ad_ad_icon_layout"
+                    app:layout_constraintRight_toLeftOf="@+id/native_adchoice_view"
+                    app:layout_constraintTop_toTopOf="@+id/native_ad_ad_icon_layout"
+                    tools:ignore="HardcodedText" />
+
+                <TextView
+                    android:id="@+id/native_ad_body"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp4"
+                    android:layout_marginEnd="@dimen/dp8"
+                    android:background="@drawable/bg_ad_loading"
+                    android:ellipsize="end"
+                    android:maxLines="3"
+                    android:text="                                              "
+                    android:textSize="@dimen/ad_sp14"
+                    app:layout_constrainedWidth="true"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintLeft_toLeftOf="@+id/native_ad_title"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/native_ad_title"
+                    tools:ignore="HardcodedText" />
+
+
+                <TextView
+                    android:id="@+id/native_cta"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/dp8"
+                    android:background="@drawable/bg_cta_2"
+                    android:gravity="center"
+                    android:padding="@dimen/dp12"
+                    android:textAllCaps="true"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/ad_sp14"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/native_ad_body"
+                    tools:text="Install" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+    </FrameLayout>
+</LinearLayout>

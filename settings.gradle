@@ -1,0 +1,3 @@
+include ':ad'
+include ':app'
+rootProject.name = "AdTemplate"
