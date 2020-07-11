@@ -1,6 +1,7 @@
 package com.superad.inter;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.InterstitialAd;
@@ -52,8 +53,10 @@ public class InterstitialAdLoader {
     }
 
     public void reload() {
+        Log.i("thoinv", "reload: ");
         isAdShowed = false;
         isUserClickAd = false;
+        load();
     }
 
     private InterstitialAdLoader(Context context, String adUnitId) {
