@@ -10,6 +10,8 @@ import com.superad.util.AdPrefs;
 public class AdManager {
     private static AdManager instance;
     private boolean debugMode;
+    private boolean enableEventTrack = false;
+    private AppDelegate appDelegate;
 
     AdManager(Context context) {
         initConfigs(context);
@@ -45,6 +47,26 @@ public class AdManager {
             instance = new AdManager(context);
         }
         return instance;
+    }
+
+    public AdManager setEnableEventTrack(boolean enableEventTrack) {
+        this.enableEventTrack = enableEventTrack;
+        return this;
+    }
+
+    public boolean isEnableEventTrack() {
+        return enableEventTrack;
+    }
+
+    public void setAppDelegate(AppDelegate appDelegate) {
+        this.appDelegate = appDelegate;
+    }
+
+    public AppDelegate getAppDelegate() {
+        if (appDelegate == null) {
+            return () -> false;
+        }
+        return appDelegate;
     }
 
     public void setDebugMode(boolean debugMode) {

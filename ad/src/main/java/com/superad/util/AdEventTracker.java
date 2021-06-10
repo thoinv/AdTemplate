@@ -24,11 +24,11 @@ public final class AdEventTracker {
     private static final String MESSAGE = "message";
     private static volatile AdEventTracker adEventTracker;
     private final FirebaseAnalytics firebaseAnalytics;
-    private final boolean debugLog;
+    private final Context context;
 
     private AdEventTracker(Context context) {
         this.firebaseAnalytics = FirebaseAnalytics.getInstance(context);
-        this.debugLog = AdManager.getInstance(context).isDebugMode();
+        this.context = context;
     }
 
     public static AdEventTracker getInstance(Context context) {
@@ -41,12 +41,6 @@ public final class AdEventTracker {
 
     public void log(@NonNull @Size(min = 1L, max = 32L) String eventName) {
         this.log(eventName, "");
-    }
-
-    public void log(Exception exception) {
-        if (debugLog) {
-            exception.printStackTrace();
-        }
     }
 
     public void log(@NonNull @Size(min = 1L, max = 32L) String eventName, @NonNull String message) {
@@ -82,6 +76,10 @@ public final class AdEventTracker {
     }
 
     public void log(@NonNull @Size(min = 1L, max = 32L) String eventName, @NonNull Bundle bundle) {
+        if (AdManager.getInstance(context).isDebugMode()) {
+            AdLogger.logW("Disable tracker mode.");
+            return;
+        }
         try {
             long time = System.currentTimeMillis();
             bundle.putLong("time_long", time);

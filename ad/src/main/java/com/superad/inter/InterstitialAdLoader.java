@@ -19,6 +19,8 @@ import com.superad.util.AdLogger;
 import com.superad.util.AdUtil;
 import com.superad.util.DeviceUtil;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Calendar;
 
 
@@ -59,6 +61,7 @@ public class InterstitialAdLoader {
 
     public void reload() {
         isAdShowed = false;
+        InterstitialAdCache.instance().showing = false;
         load();
     }
 
@@ -74,6 +77,7 @@ public class InterstitialAdLoader {
 
     public void show(Activity activity) {
         this.isAdShowed = true;
+        InterstitialAdCache.instance().showing = true;
         this.interstitialAdObj.show(activity);
     }
 
@@ -120,7 +124,7 @@ public class InterstitialAdLoader {
                         interstitialAdObj = interstitialAd;
                         interstitialAdObj.setFullScreenContentCallback(new FullScreenContentCallback() {
                             @Override
-                            public void onAdFailedToShowFullScreenContent(AdError adError) {
+                            public void onAdFailedToShowFullScreenContent(@NotNull AdError adError) {
                                 super.onAdFailedToShowFullScreenContent(adError);
                                 AdLogger.logD(adError.getMessage());
                                 if (adListener != null) {
@@ -133,6 +137,7 @@ public class InterstitialAdLoader {
                                 super.onAdShowedFullScreenContent();
                                 AdLogger.showCurrentMethodName();
                                 isAdShowed = true;
+                                InterstitialAdCache.instance().showing = true;
                                 if (adListener != null) {
                                     adListener.onAdImpression();
                                 }
@@ -173,6 +178,7 @@ public class InterstitialAdLoader {
 
     public void reset() {
         this.isAdShowed = false;
+        InterstitialAdCache.instance().showing = false;
     }
 
 }

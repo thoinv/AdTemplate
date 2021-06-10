@@ -32,6 +32,10 @@ public class AdLogger {
         Log.d(TAG, composeDefaultMessage(String.valueOf(intValue)));
     }
 
+    public static void logW(String message) {
+        Log.d(TAG, composeDefaultMessage(message));
+    }
+
     public static void logE(String message) {
         Log.e(TAG, composeDefaultMessage(message));
     }
