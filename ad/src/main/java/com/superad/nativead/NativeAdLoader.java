@@ -1,9 +1,9 @@
-package com.superad;
+package com.superad.nativead;
 
 import android.content.Context;
 
 import com.google.android.gms.ads.AdLoader;
-import com.google.android.gms.ads.formats.UnifiedNativeAd;
+import com.google.android.gms.ads.nativead.NativeAd;
 import com.superad.config.ConfigLoader;
 import com.superad.config.ConfigStrategy;
 import com.superad.util.AdUtil;
@@ -12,7 +12,7 @@ import com.superad.util.DeviceUtil;
 public class NativeAdLoader {
 
     public abstract static class NativeAdLoaderListener {
-        public void onAdLoaded(UnifiedNativeAd unifiedNativeAd) {
+        public void onAdLoaded(NativeAd unifiedNativeAd) {
         }
 
         public void onAdClicked() {
@@ -63,26 +63,12 @@ public class NativeAdLoader {
         }
 
         com.google.android.gms.ads.AdLoader.Builder builder = new com.google.android.gms.ads.AdLoader.Builder(context, adUnit)
-                .forUnifiedNativeAd(unifiedNativeAd -> {
+                .forNativeAd(unifiedNativeAd -> {
                     if (onAdLoaderListener != null) {
                         onAdLoaderListener.onAdLoaded(unifiedNativeAd);
                     }
                 });
-        return builder.withAdListener(new AdListenerImp(context, adPosition) {
-            @Override
-            public void onAdFailedToLoad(int i) {
-                super.onAdFailedToLoad(i);
-                onAdLoadFailed("Error with code = " + i);
-            }
-
-            @Override
-            public void onAdClicked() {
-                super.onAdClicked();
-                if (onAdLoaderListener != null) {
-                    onAdLoaderListener.onAdClicked();
-                }
-            }
-        }).build();
+        return builder.withAdListener(new AdListenerImp(context, adPosition)).build();
     }
 
     public void loadAd(Context context) {

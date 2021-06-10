@@ -1,31 +1,36 @@
 package com.superad.inter;
 
+import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
+import android.text.TextUtils;
 
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.InterstitialAd;
-import com.superad.AdListenerImp;
+import androidx.annotation.NonNull;
+
+import com.google.android.gms.ads.AdError;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.superad.config.ConfigLoader;
 import com.superad.config.ConfigStrategy;
 import com.superad.inter.cachetime.AdRequestCapping;
 import com.superad.inter.cachetime.Capping;
+import com.superad.util.AdLogger;
 import com.superad.util.AdUtil;
 import com.superad.util.DeviceUtil;
-import com.superad.util.LogUtils;
 
 import java.util.Calendar;
 
 
 public class InterstitialAdLoader {
 
-    private final InterstitialAd interstitialAd;
+    private final String adUnitId;
+    private InterstitialAd interstitialAdObj;
     private final Context context;
     private String adPosition;
     private boolean isAdShowed;
-    private boolean isUserClickAd;
     private String liveKey;
-    private AdListener adListener;
+    private SuperAdListener adListener;
 
     public interface SkipAdListener {
         void onSkip();
@@ -33,7 +38,7 @@ public class InterstitialAdLoader {
 
     private SkipAdListener skipAdListener;
 
-    public InterstitialAdLoader setAdListener(AdListener adListener) {
+    public InterstitialAdLoader setAdListener(SuperAdListener adListener) {
         this.adListener = adListener;
         return this;
     }
@@ -53,16 +58,13 @@ public class InterstitialAdLoader {
     }
 
     public void reload() {
-        Log.i("thoinv", "reload: ");
         isAdShowed = false;
-        isUserClickAd = false;
         load();
     }
 
     private InterstitialAdLoader(Context context, String adUnitId) {
         this.context = context;
-        this.interstitialAd = new InterstitialAd(context);
-        this.interstitialAd.setAdUnitId(adUnitId);
+        this.adUnitId = adUnitId;
     }
 
     public InterstitialAdLoader setAdPosition(String adPosition) {
@@ -70,14 +72,13 @@ public class InterstitialAdLoader {
         return this;
     }
 
-
-    public void show() {
+    public void show(Activity activity) {
         this.isAdShowed = true;
-        this.interstitialAd.show();
+        this.interstitialAdObj.show(activity);
     }
 
     public boolean isAdLoaded() {
-        return this.interstitialAd != null && this.interstitialAd.isLoaded();
+        return this.interstitialAdObj != null;
     }
 
     public InterstitialAdLoader load() {
@@ -90,16 +91,13 @@ public class InterstitialAdLoader {
                 config.getAdCacheTime(), Calendar.MINUTE) {
             @Override
             protected void task() {
-                if (interstitialAd == null) {
-                    return;
-                }
-                LogUtils.logD("[" + adPosition + "] Request ad with cache time " + config.getAdCacheTime() + " min");
+                AdLogger.logD("[" + adPosition + "] Request ad with cache time " + config.getAdCacheTime() + " min");
                 loadAd(adListener);
             }
 
             @Override
             protected void skip() {
-                LogUtils.logD("[" + adPosition + "] Skip request ad");
+                AdLogger.logD("[" + adPosition + "] Skip request ad");
                 if (skipAdListener != null) {
                     skipAdListener.onSkip();
                 }
@@ -109,56 +107,64 @@ public class InterstitialAdLoader {
         return this;
     }
 
-    private void loadAd(AdListener adListener) {
-        interstitialAd.setAdListener(new AdListenerImp(context, adPosition) {
+    private void loadAd(SuperAdListener adListener) {
 
+        if (adListener != null && TextUtils.isEmpty(adUnitId)) {
+            AdLogger.logE("AD UNIT is empty");
+            return;
+        }
+        InterstitialAd.load(context, adUnitId, AdUtil.getAdRequestBuilderWithTestDevice(context).build(),
+                new InterstitialAdLoadCallback() {
+                    @Override
+                    public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                        interstitialAdObj = interstitialAd;
+                        interstitialAdObj.setFullScreenContentCallback(new FullScreenContentCallback() {
+                            @Override
+                            public void onAdFailedToShowFullScreenContent(AdError adError) {
+                                super.onAdFailedToShowFullScreenContent(adError);
+                                AdLogger.logD(adError.getMessage());
+                                if (adListener != null) {
+                                    adListener.onAdFailedToShowFullScreenContent(adError);
+                                }
+                            }
 
-            @Override
-            public void onAdLoaded() {
-                super.onAdLoaded();
-                if (adListener != null) {
-                    adListener.onAdLoaded();
-                }
-            }
+                            @Override
+                            public void onAdShowedFullScreenContent() {
+                                super.onAdShowedFullScreenContent();
+                                AdLogger.showCurrentMethodName();
+                                isAdShowed = true;
+                                if (adListener != null) {
+                                    adListener.onAdImpression();
+                                }
+                            }
 
-            @Override
-            public void onAdFailedToLoad(int i) {
-                super.onAdFailedToLoad(i);
-                if (adListener != null) {
-                    adListener.onAdFailedToLoad(i);
-                }
-            }
+                            @Override
+                            public void onAdDismissedFullScreenContent() {
+                                super.onAdDismissedFullScreenContent();
+                                AdLogger.showCurrentMethodName();
+                                if (adListener != null) {
+                                    adListener.onAdClosed();
+                                }
+                            }
 
-            @Override
-            public void onAdClicked() {
-                super.onAdClicked();
-                isUserClickAd = true;
-                if (adListener != null) {
-                    adListener.onAdClicked();
-                }
-            }
+                        });
+                        if (adListener != null) {
+                            AdLogger.logD("onAdLoaded");
+                            adListener.onAdLoaded();
+                        }
 
-            @Override
-            public void onAdImpression() {
-                super.onAdImpression();
-                if (adListener != null) {
-                    adListener.onAdImpression();
-                }
-            }
+                    }
 
-            @Override
-            public void onAdClosed() {
-                super.onAdClosed();
-                if (adListener != null) {
-                    adListener.onAdClosed();
-                }
-            }
-        });
-        this.interstitialAd.loadAd(AdUtil.getAdRequestBuilderWithTestDevice(context).build());
-    }
+                    @Override
+                    public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                        AdLogger.logE(loadAdError.getMessage());
+                        interstitialAdObj = null;
+                        if (adListener != null) {
+                            adListener.onAdFailedToLoad(loadAdError);
+                        }
+                    }
+                });
 
-    public boolean isUserClickAd() {
-        return isUserClickAd;
     }
 
     public boolean isAdShowed() {

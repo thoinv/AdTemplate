@@ -1,4 +1,4 @@
-package com.superad;
+package com.superad.nativead;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -13,9 +13,10 @@ import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
 
-import com.google.android.gms.ads.formats.UnifiedNativeAd;
-import com.google.android.gms.ads.formats.UnifiedNativeAdView;
-import com.superad.util.LogUtils;
+import com.google.android.gms.ads.nativead.MediaView;
+import com.google.android.gms.ads.nativead.NativeAd;
+import com.superad.R;
+import com.superad.util.AdLogger;
 
 public class NativeAdView extends LinearLayout {
 
@@ -60,7 +61,7 @@ public class NativeAdView extends LinearLayout {
         if (typedArray.hasValue(R.styleable.NativeAdView_ad_style)) {
             int style = typedArray.getInt(R.styleable.NativeAdView_ad_style, 0);
             this.adStyle = Style.fromId(style);
-            LogUtils.logD(adStyle.name());
+            AdLogger.logD(adStyle.name());
         }
 
         this.viewIcon = this.findViewById(R.id.native_ad_ad_icon_layout);
@@ -112,7 +113,7 @@ public class NativeAdView extends LinearLayout {
         return adAttached;
     }
 
-    public void show(UnifiedNativeAd unifiedNativeAd) {
+    public void show(NativeAd unifiedNativeAd) {
         if (unifiedNativeAd == null) {
             setVisibility(GONE);
             return;
@@ -128,11 +129,11 @@ public class NativeAdView extends LinearLayout {
         this.btNativeCta.setText(unifiedNativeAd.getCallToAction());
         this.hideLoadingState(tvNativeTitle, tvNativeBody, btNativeCta, viewIcon, layoutMediaView);
 
-        UnifiedNativeAdView unifiedNativeAdView = new UnifiedNativeAdView(getContext());
+        com.google.android.gms.ads.nativead.NativeAdView unifiedNativeAdView = new com.google.android.gms.ads.nativead.NativeAdView(getContext());
         unifiedNativeAdView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
         if (this.adStyle == Style.MEDIA_VIEW) {
-            com.google.android.gms.ads.formats.MediaView admobMediaView = new com.google.android.gms.ads.formats.MediaView(getContext());
+           MediaView admobMediaView = new MediaView(getContext());
             this.layoutMediaView.addView(admobMediaView, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
             this.layoutMediaView.setVisibility(VISIBLE);
             unifiedNativeAdView.setMediaView(admobMediaView);
@@ -140,7 +141,7 @@ public class NativeAdView extends LinearLayout {
 
         ImageView admobIcon = new ImageView(getContext());
         this.viewIcon.addView(admobIcon, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-        com.google.android.gms.ads.formats.NativeAd.Image icon = unifiedNativeAd.getIcon();
+        NativeAd.Image icon = unifiedNativeAd.getIcon();
         if (icon != null && icon.getDrawable() != null) {
             admobIcon.setImageDrawable(icon.getDrawable());
         }

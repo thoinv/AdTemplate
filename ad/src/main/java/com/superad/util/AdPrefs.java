@@ -126,4 +126,13 @@ public class AdPrefs {
             putFloat(key, (Float) value);
         }
     }
+
+    public static void showAllData() {
+        Map<String, ?> allEntries = pref.getAll();
+        AdLogger.logD("==================================");
+        for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
+            AdLogger.logD(entry.getKey() + ": " + entry.getValue().toString());
+        }
+    }
+
 }

@@ -1,40 +1,42 @@
-package com.superad;
+package com.superad.util;
 
 import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Size;
 
+
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.superad.AdManager;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public final class AdLogger {
+public final class AdEventTracker {
     private static final String TYPE = "type";
     private static final String CHANNEL = "channel";
     private static final String NAME = "name";
     private static final String EVENT = "event";
     private static final String ID = "id";
     private static final String MESSAGE = "message";
-    private static volatile AdLogger adLogger;
-    private FirebaseAnalytics firebaseAnalytics;
-    private boolean debugLog = true;
+    private static volatile AdEventTracker adEventTracker;
+    private final FirebaseAnalytics firebaseAnalytics;
+    private final boolean debugLog;
 
-    private AdLogger(Context context) {
+    private AdEventTracker(Context context) {
         this.firebaseAnalytics = FirebaseAnalytics.getInstance(context);
+        this.debugLog = AdManager.getInstance(context).isDebugMode();
     }
 
-    public static AdLogger getInstance(Context context) {
-        if (adLogger == null) {
-            adLogger = new AdLogger(context);
+    public static AdEventTracker getInstance(Context context) {
+        if (adEventTracker == null) {
+            adEventTracker = new AdEventTracker(context);
         }
 
-        return adLogger;
+        return adEventTracker;
     }
 
     public void log(@NonNull @Size(min = 1L, max = 32L) String eventName) {
@@ -47,10 +49,6 @@ public final class AdLogger {
         }
     }
 
-    public void setDebugLog(boolean debugLog) {
-        this.debugLog = true;
-    }
-
     public void log(@NonNull @Size(min = 1L, max = 32L) String eventName, @NonNull String message) {
         Bundle bundle = new Bundle();
         String msg = eventName;
@@ -59,7 +57,7 @@ public final class AdLogger {
             bundle.putString(MESSAGE, message);
         }
 
-        Log.i("AdLogger", msg);
+        AdLogger.logI(msg);
         this.log(eventName, bundle);
     }
 

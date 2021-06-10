@@ -1,5 +1,5 @@
 package com.superad;
 
-class Consts {
+public class Consts {
     public static final String IT = "it";
 }

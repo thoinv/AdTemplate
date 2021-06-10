@@ -1,14 +1,15 @@
-package com.superad;
+package com.superad.inter;
 
 import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import com.google.android.gms.ads.AdListener;
-import com.superad.util.LogUtils;
+import com.google.android.gms.ads.LoadAdError;
+import com.superad.util.AdEventTracker;
+import com.superad.util.AdLogger;
 
 
-public class AdListenerImp extends AdListener {
+public class AdListenerImp extends SuperAdListener {
 
     private static final String SUCCESS = "success";
     private static final String IMPRESS = "impress";
@@ -28,33 +29,18 @@ public class AdListenerImp extends AdListener {
     @Override
     public void onAdClosed() {
         super.onAdClosed();
-        if (adPlacement.startsWith(Consts.IT)) {
-            logEvent(adPlacement, DISMISS);
-        }
+        logEvent(adPlacement, DISMISS);
     }
 
     private void logEvent(String adPlacement, String event) {
-        AdLogger.getInstance(context).log("gad_" + adPlacement + "_" + event);
+        AdEventTracker.getInstance(context).log("gad_" + adPlacement + "_" + event);
     }
 
     @Override
-    public void onAdFailedToLoad(int i) {
-        super.onAdFailedToLoad(i);
-        LogUtils.logE("Error " + i);
+    public void onAdFailedToLoad(LoadAdError var1) {
+        super.onAdFailedToLoad(var1);
+        AdLogger.logE("Error " + var1.getCode());
         logEvent(adPlacement, ERROR);
-    }
-
-    @Override
-    public void onAdLeftApplication() {
-        super.onAdLeftApplication();
-    }
-
-    @Override
-    public void onAdOpened() {
-        super.onAdOpened();
-        if (adPlacement.startsWith(Consts.IT)) {
-            logEvent(adPlacement, IMPRESS);
-        }
     }
 
     @Override
